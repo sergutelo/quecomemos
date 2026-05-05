@@ -397,7 +397,7 @@ btnShare.addEventListener('click', async () => {
     return;
   }
 
-  let shareText = "🗓️ *Nuestro Menú Semanal*\n\n";
+  let shareText = "🗓️ *NUESTRO MENÚ SEMANAL*\n\n";
   const dates = Object.keys(plannedMeals).sort();
   
   dates.forEach(dateStr => {
@@ -405,14 +405,24 @@ btnShare.addEventListener('click', async () => {
     if (dayData.lunch.length > 0 || dayData.dinner.length > 0) {
       shareText += `*${getDayName(dateStr)} ${getFormattedDate(dateStr)}*\n`;
       if (dayData.lunch.length > 0) {
-        shareText += `☀️ Comida: ${dayData.lunch.join(', ')}\n`;
+        shareText += `☀️ COMIDA: ${dayData.lunch.join(', ')}\n`;
       }
       if (dayData.dinner.length > 0) {
-        shareText += `🌙 Cena: ${dayData.dinner.join(', ')}\n`;
+        shareText += `🌙 CENA: ${dayData.dinner.join(', ')}\n`;
       }
       shareText += "\n";
     }
   });
+
+  const copyToClipboard = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert("¡Menú copiado al portapapeles! Ya puedes pegarlo.");
+      }).catch(() => {
+        alert("Tu menú está listo pero hubo un error al copiarlo.");
+      });
+    }
+  };
 
   if (navigator.share) {
     try {
@@ -421,14 +431,11 @@ btnShare.addEventListener('click', async () => {
         text: shareText
       });
     } catch (err) {
-      console.log('Cancelado al compartir', err);
+      console.log('Compartir nativo cancelado o fallido', err);
+      copyToClipboard();
     }
   } else {
-    navigator.clipboard.writeText(shareText).then(() => {
-      alert("¡Menú copiado al portapapeles!");
-    }).catch(() => {
-      alert("Error al intentar copiar el texto.");
-    });
+    copyToClipboard();
   }
 });
 
