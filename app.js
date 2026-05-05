@@ -641,10 +641,37 @@ btnShopping.addEventListener('click', () => {
 initMockData();
 renderMainView();
 
-// Registrar Service Worker
+// Registrar Service Worker y gestionar actualizaciones
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .catch(err => console.error('Error al registrar SW.', err));
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      
+      // Detectar actualizaciones
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Hay una nueva versión disponible
+            const toast = document.getElementById('update-toast');
+            const btnUpdate = document.getElementById('btn-update-app');
+            
+            toast.style.display = 'flex';
+            
+            btnUpdate.addEventListener('click', () => {
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            });
+          }
+        });
+      });
+    }).catch(err => console.error('Error al registrar SW.', err));
+
+    // Recargar cuando el nuevo SW tome el control
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
   });
 }

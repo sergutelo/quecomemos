@@ -1,11 +1,12 @@
-const CACHE_NAME = 'quecomemos-v1';
+const CACHE_NAME = 'quecomemos-v2';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap'
+  './icon.png',
+  'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap'
 ];
 
 self.addEventListener('install', event => {
@@ -17,15 +18,34 @@ self.addEventListener('install', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Devuelve del caché si está, o si no lo descarga de la red
         if (response) {
           return response;
         }
         return fetch(event.request);
       })
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
