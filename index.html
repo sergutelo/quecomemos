@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quecomemos</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#F0F0F0">
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-shapes">
+        <div class="logo-shape circle bg-red"></div>
+        <div class="logo-shape square bg-blue"></div>
+        <div class="logo-shape triangle bg-yellow"></div>
+      </div>
+      <h1>QUECOMEMOS</h1>
+    </div>
+    <div class="header-actions">
+      <button id="btn-share" class="icon-btn bg-yellow" aria-label="Compartir menú" title="Compartir menú">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      </button>
+      <button id="btn-settings" class="icon-btn bg-blue" aria-label="Ajustes" title="Ajustes">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Vista Principal: Calendario -->
+  <main id="view-main" class="view active">
+    <div id="days-list" class="days-list">
+      <!-- Los días se inyectan mediante JavaScript -->
+    </div>
+    <button id="fab-add" class="fab bg-red" aria-label="Añadir menú">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+  </main>
+
+  <!-- Vista Añadir: Planificador -->
+  <main id="view-add" class="view">
+    <div class="add-container relative">
+      <div class="deco-circle"></div>
+      <div class="header-back">
+        <button id="btn-back-add" class="icon-btn bg-yellow" aria-label="Volver">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <h2>PLANIFICAR</h2>
+      </div>
+
+      <div class="form-group">
+        <label for="meal-date">FECHA</label>
+        <input type="date" id="meal-date" required>
+      </div>
+
+      <div class="form-group">
+        <label>TURNO</label>
+        <div class="radio-group">
+          <input type="radio" id="type-lunch" name="meal-type" value="lunch" checked>
+          <label class="radio-btn" for="type-lunch">☀️ COMIDA</label>
+          <input type="radio" id="type-dinner" name="meal-type" value="dinner">
+          <label class="radio-btn" for="type-dinner">🌙 CENA</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="meal-dish-1">PLATO PRINCIPAL</label>
+        <input type="text" id="meal-dish-1" placeholder="Ej. Macarrones con tomate" autocomplete="off">
+        <div id="suggestions-1" class="suggestions-container"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="meal-dish-2">SEGUNDO PLATO</label>
+        <input type="text" id="meal-dish-2" placeholder="Ej. Ensalada mixta" autocomplete="off">
+        <div id="suggestions-2" class="suggestions-container"></div>
+      </div>
+
+      <button id="btn-save" class="btn-primary">GUARDAR MENÚ</button>
+      <div class="deco-square"></div>
+    </div>
+  </main>
+
+  <!-- Vista Ajustes -->
+  <main id="view-settings" class="view">
+    <div class="add-container relative">
+      <div class="deco-triangle"></div>
+      <div class="header-back">
+        <button id="btn-back-settings" class="icon-btn bg-yellow" aria-label="Volver">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <h2>AJUSTES</h2>
+      </div>
+
+      <div class="settings-section">
+        <h3>COPIAS DE SEGURIDAD</h3>
+        <p class="settings-desc">EXPORTA TUS MENÚS E HISTORIAL PARA PASARLOS A OTRO DISPOSITIVO O GUARDARLOS DE FORMA SEGURA.</p>
+        <button id="btn-export" class="btn-secondary">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          EXPORTAR DATOS
+        </button>
+        
+        <div style="margin-top: 24px;">
+          <input type="file" id="file-import" accept=".json" style="display: none;">
+          <button id="btn-import" class="btn-secondary">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            IMPORTAR DATOS
+          </button>
+        </div>
+      </div>
+      <div class="deco-circle" style="bottom: -12px; top: auto; left: auto; right: -12px; background-color: var(--c-blue);"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

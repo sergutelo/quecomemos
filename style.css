@@ -1,0 +1,450 @@
+:root {
+  --bg-canvas: #F0F0F0;
+  --bg-card: #ffffff;
+  --c-black: #121212;
+  --c-red: #D02020;
+  --c-blue: #1040C0;
+  --c-yellow: #F0C020;
+  --border-width: 3px;
+  --shadow-offset: 6px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --border-width: 4px;
+    --shadow-offset: 8px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--c-black);
+  line-height: 1.4;
+  overflow-x: hidden;
+  /* Bauhaus Pattern */
+  background-image: radial-gradient(var(--c-black) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+
+/* Typography */
+h1, h2, h3, label {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  margin: 0;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2.2rem; }
+h3 { font-size: 1.5rem; margin-bottom: 8px; }
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background-color: var(--bg-card);
+  border-bottom: var(--border-width) solid var(--c-black);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0px var(--shadow-offset) 0px 0px var(--c-black);
+  margin-bottom: var(--shadow-offset);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-shapes {
+  display: flex;
+  position: relative;
+  width: 40px;
+  height: 24px;
+}
+
+.logo-shape {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--c-black);
+  position: absolute;
+  top: 2px;
+}
+.logo-shape.circle { border-radius: 9999px; left: 0; z-index: 3; }
+.logo-shape.square { left: 10px; z-index: 2; border-radius: 0; }
+.logo-shape.triangle {
+  left: 20px; z-index: 1; border-radius: 0; border: none;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  /* Trick to give triangle border: not natively possible with clip-path alone easily, so we use drop-shadow or pseudo */
+  /* For Bauhaus, simple solid block is fine here */
+  width: 24px; height: 24px; top: 0;
+}
+
+.bg-red { background-color: var(--c-red) !important; color: white; }
+.bg-blue { background-color: var(--c-blue) !important; color: white; }
+.bg-yellow { background-color: var(--c-yellow) !important; color: var(--c-black); }
+
+/* Actions */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  border-radius: 0; /* Square button */
+}
+
+.icon-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+/* Container */
+.view {
+  display: none;
+  padding: 32px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.view.active { display: block; }
+
+/* Day Card */
+.day-card {
+  background-color: var(--bg-card);
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--c-black);
+  padding: 24px;
+  margin-bottom: 32px;
+  position: relative;
+  transition: transform 0.2s ease-out;
+  border-radius: 0; /* Bauhaus square */
+}
+.day-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Decorators inside cards via JS */
+.card-deco {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--c-black);
+}
+
+/* Day Header */
+.day-header {
+  border-bottom: var(--border-width) solid var(--c-black);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.day-name {
+  font-weight: 900;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  color: var(--c-black);
+}
+.day-date {
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--c-black);
+  margin-top: 4px;
+}
+
+/* Meals */
+.meal-type-title {
+  font-weight: 900;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--c-black);
+  color: white;
+  padding: 8px 12px;
+  width: fit-content;
+}
+
+.meal-items {
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.meal-item-container {
+  border: var(--border-width) solid var(--c-black);
+  position: relative;
+  background-color: var(--c-red); /* Swipe to delete */
+  overflow: hidden;
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+}
+
+.meal-item-bg {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; width: 100%;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 20px;
+  color: white;
+}
+
+.meal-item-surface {
+  background-color: var(--bg-card);
+  padding: 16px;
+  font-weight: 700;
+  font-size: 1.3rem;
+  border-right: var(--border-width) solid var(--c-black); 
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease-out;
+  text-transform: uppercase;
+}
+.meal-item-surface.swiping { transition: none; }
+
+.meal-item-surface::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: var(--c-yellow);
+  border: 2px solid var(--c-black);
+  margin-right: 16px;
+  border-radius: 9999px;
+}
+
+.meal-text { flex-grow: 1; }
+
+.no-meals {
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  padding: 12px;
+  border: 2px dashed var(--c-black);
+  text-align: center;
+}
+
+.btn-delete {
+  background: none; border: none; cursor: pointer; margin-left: auto;
+  color: var(--c-black);
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  width: 72px; height: 72px;
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--c-black);
+  border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+.fab:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+/* Settings / Add */
+.add-container {
+  background-color: var(--bg-card);
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--c-black);
+  padding: 32px 24px;
+}
+
+.relative { position: relative; }
+
+.header-back {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: var(--border-width) solid var(--c-black);
+  padding-bottom: 16px;
+}
+
+.form-group { margin-bottom: 32px; }
+
+label {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+input[type="text"], input[type="date"] {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.3rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+  background-color: var(--bg-card);
+  text-transform: uppercase;
+}
+input:focus {
+  outline: none;
+  background-color: var(--c-yellow);
+}
+
+/* Radio Group */
+.radio-group { display: flex; gap: 16px; }
+.radio-group input { display: none; }
+.radio-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16px;
+  font-weight: 900;
+  font-size: 1.3rem;
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+  cursor: pointer;
+  background-color: var(--bg-card);
+  transition: all 0.1s ease-out;
+}
+.radio-group input:checked + .radio-btn {
+  background-color: var(--c-blue);
+  color: white;
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+/* Primary Button */
+.btn-primary {
+  width: 100%;
+  padding: 24px;
+  background-color: var(--c-red);
+  color: white;
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--c-black);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+.btn-primary:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  width: 100%;
+  padding: 18px;
+  background-color: var(--c-yellow);
+  color: var(--c-black);
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.btn-secondary:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+.settings-desc {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--c-black);
+  padding-left: 12px;
+}
+
+/* Suggestions */
+.suggestions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.suggestion-btn {
+  border: var(--border-width) solid var(--c-black);
+  background-color: var(--bg-card);
+  padding: 8px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0px 0px var(--c-black);
+  cursor: pointer;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  border-radius: 9999px; /* Pill shape for variety */
+}
+.suggestion-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px 0px var(--c-black);
+}
+
+/* Bauhaus Decorators */
+.deco-circle {
+  position: absolute; top: -16px; right: -16px;
+  width: 32px; height: 32px; border-radius: 9999px;
+  background-color: var(--c-yellow); border: var(--border-width) solid var(--c-black);
+}
+.deco-square {
+  position: absolute; bottom: -16px; left: -16px;
+  width: 32px; height: 32px;
+  background-color: var(--c-blue); border: var(--border-width) solid var(--c-black);
+}
+.deco-triangle {
+  position: absolute; top: -16px; right: -16px;
+  width: 32px; height: 32px;
+  background-color: var(--c-red); 
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.8rem; }
+  .view { padding: 24px 16px; }
+  .day-name { font-size: 2rem; }
+  .meal-type-title { font-size: 1.3rem; }
+  .meal-item-surface { font-size: 1.1rem; padding: 12px; }
+  .btn-primary { font-size: 1.4rem; padding: 16px; }
+}
