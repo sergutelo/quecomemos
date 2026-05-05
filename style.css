@@ -440,6 +440,33 @@ input:focus {
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
+/* Accessibility */
+html.font-large { font-size: 18px; }
+html.font-xlarge { font-size: 20px; }
+
+.btn-font { flex: 1; padding: 12px; background: var(--bg-card); font-weight: 900; border: var(--border-width) solid var(--c-black); cursor: pointer; box-shadow: 4px 4px 0px 0px var(--c-black); transition: all 0.1s; font-family: 'Outfit', sans-serif;}
+.btn-font.active-font { background: var(--c-blue); color: white; transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--c-black); }
+
+/* History List */
+.history-list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.history-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px;
+  border: var(--border-width) solid var(--c-black);
+  background-color: var(--bg-card);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+.history-item button {
+  background: var(--c-red); border: 2px solid var(--c-black);
+  color: white; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
 @media (max-width: 480px) {
   h1 { font-size: 1.8rem; }
   .view { padding: 24px 16px; }
@@ -447,4 +474,41 @@ input:focus {
   .meal-type-title { font-size: 1.3rem; }
   .meal-item-surface { font-size: 1.1rem; padding: 12px; }
   .btn-primary { font-size: 1.4rem; padding: 16px; }
+}
+
+@media print {
+  body {
+    background: white;
+    background-image: none;
+  }
+  header, #fab-add, .view:not(#view-main), .btn-delete {
+    display: none !important;
+  }
+  #view-main {
+    display: block !important;
+    padding: 0;
+  }
+  .day-card {
+    border: 3px solid black;
+    box-shadow: none !important;
+    break-inside: avoid;
+    margin-bottom: 24px;
+    padding: 16px;
+  }
+  .meal-item-bg {
+    display: none !important;
+  }
+  .meal-item-container {
+    border: 2px solid black;
+    box-shadow: none !important;
+    background: white;
+  }
+  .meal-item-surface {
+    border: none;
+    padding: 12px;
+  }
+  .meal-item-surface::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

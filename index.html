@@ -96,6 +96,56 @@
         <h2>AJUSTES</h2>
       </div>
 
+      <div class="settings-section" style="margin-bottom: 32px;">
+        <h3>IMPRIMIR Y LISTA</h3>
+        <p class="settings-desc">IMPRIME TU MENÚ PARA LA NEVERA O GENERA LA LISTA DE COMPRA.</p>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom: 16px;">
+          <button id="btn-print" class="btn-secondary" style="flex:1;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            IMPRIMIR
+          </button>
+          <button id="btn-shopping" class="btn-secondary" style="flex:1;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            LISTA COMPRA
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-section" style="margin-bottom: 32px;">
+        <h3>LIMPIEZA DE DATOS</h3>
+        <div class="form-group" style="margin-bottom: 24px; display:flex; align-items:center; justify-content:space-between; border: var(--border-width) solid var(--c-black); padding: 16px; background: var(--bg-canvas); box-shadow: 4px 4px 0px 0px var(--c-black);">
+          <label for="auto-purge" style="margin-bottom:0; font-size:1.1rem;">BORRAR DÍAS PASADOS AL ABRIR</label>
+          <input type="checkbox" id="auto-purge" style="width:24px; height:24px; accent-color: var(--c-red);">
+        </div>
+        
+        <p class="settings-desc" style="color:var(--c-red); border-left-color: var(--c-red);">ZONA DE PELIGRO</p>
+        <button id="btn-reset-menus" class="btn-secondary" style="border-color: var(--c-red); color: var(--c-red); margin-bottom: 16px; background-color: var(--bg-canvas);">
+          BORRAR TODOS LOS MENÚS
+        </button>
+        <button id="btn-reset-history" class="btn-secondary" style="border-color: var(--c-red); color: var(--c-red); background-color: var(--bg-canvas);">
+          BORRAR HISTORIAL SUGERENCIAS
+        </button>
+      </div>
+
+      <div class="settings-section" style="margin-bottom: 32px;">
+        <h3>ACCESIBILIDAD</h3>
+        <p class="settings-desc">TAMAÑO DE LA LETRA PARA FACILITAR LA LECTURA.</p>
+        <div style="display:flex; gap:8px;">
+          <button id="btn-font-normal" class="btn-font active-font">A NORMAL</button>
+          <button id="btn-font-large" class="btn-font">A+ GRANDE</button>
+          <button id="btn-font-xlarge" class="btn-font">A++ EXTRA</button>
+        </div>
+      </div>
+
+      <div class="settings-section" style="margin-bottom: 32px;">
+        <h3>LIBRO DE RECETAS</h3>
+        <p class="settings-desc">GESTIONA TODOS LOS PLATOS QUE HAS GUARDADO HISTÓRICAMENTE.</p>
+        <button id="btn-open-history" class="btn-secondary">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          VER MIS RECETAS
+        </button>
+      </div>
+
       <div class="settings-section">
         <h3>COPIAS DE SEGURIDAD</h3>
         <p class="settings-desc">EXPORTA TUS MENÚS E HISTORIAL PARA PASARLOS A OTRO DISPOSITIVO O GUARDARLOS DE FORMA SEGURA.</p>
@@ -113,6 +163,26 @@
         </div>
       </div>
       <div class="deco-circle" style="bottom: -12px; top: auto; left: auto; right: -12px; background-color: var(--c-blue);"></div>
+    </div>
+  </main>
+
+  <!-- Vista Historial (Recetas) -->
+  <main id="view-history" class="view">
+    <div class="add-container relative">
+      <div class="deco-square" style="background-color: var(--c-yellow); right: -16px; left: auto;"></div>
+      <div class="header-back">
+        <button id="btn-back-history" class="icon-btn bg-red" aria-label="Volver" style="color:white;">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <h2>MIS RECETAS</h2>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-desc">LISTADO DE PLATOS GUARDADOS. ELIMINA LOS QUE YA NO USES.</p>
+        <div id="history-list" class="history-list">
+          <!-- Generado dinámicamente -->
+        </div>
+      </div>
     </div>
   </main>
 

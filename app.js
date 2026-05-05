@@ -29,6 +29,35 @@ const suggestions2 = document.getElementById('suggestions-2');
 const btnExport = document.getElementById('btn-export');
 const btnImport = document.getElementById('btn-import');
 const fileImport = document.getElementById('file-import');
+const btnPrint = document.getElementById('btn-print');
+const btnShopping = document.getElementById('btn-shopping');
+const autoPurgeInput = document.getElementById('auto-purge');
+const btnResetMenus = document.getElementById('btn-reset-menus');
+const btnResetHistory = document.getElementById('btn-reset-history');
+const btnOpenHistory = document.getElementById('btn-open-history');
+const btnBackHistory = document.getElementById('btn-back-history');
+const historyListContainer = document.getElementById('history-list');
+const btnFontNormal = document.getElementById('btn-font-normal');
+const btnFontLarge = document.getElementById('btn-font-large');
+const btnFontXlarge = document.getElementById('btn-font-xlarge');
+
+// Ajuste local
+let autoPurge = localStorage.getItem('autoPurge') === 'true';
+let currentFontSize = localStorage.getItem('fontSize') || 'normal';
+
+function applyFontSize(size) {
+  document.documentElement.className = '';
+  if (size === 'large') document.documentElement.classList.add('font-large');
+  if (size === 'xlarge') document.documentElement.classList.add('font-xlarge');
+  
+  if (btnFontNormal) {
+    document.querySelectorAll('.btn-font').forEach(b => b.classList.remove('active-font'));
+    if (size === 'normal') btnFontNormal.classList.add('active-font');
+    if (size === 'large') btnFontLarge.classList.add('active-font');
+    if (size === 'xlarge') btnFontXlarge.classList.add('active-font');
+  }
+}
+applyFontSize(currentFontSize);
 
 // Iconos SVG
 const iconTrash = `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
@@ -46,8 +75,23 @@ function migrateData() {
 }
 migrateData();
 
-// Inicializar datos Mock
+// Inicializar datos Mock y Purga
 function initMockData() {
+  if (autoPurge) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    let needsSave = false;
+    for (const dateStr in plannedMeals) {
+      const mealDate = new Date(dateStr + "T12:00:00");
+      mealDate.setHours(0,0,0,0);
+      if (mealDate < today) {
+        delete plannedMeals[dateStr];
+        needsSave = true;
+      }
+    }
+    if (needsSave) saveData();
+  }
+
   if (Object.keys(plannedMeals).length === 0 && dishHistory.length === 0) {
     const today = new Date();
     
@@ -484,6 +528,113 @@ fileImport.addEventListener('change', (event) => {
     }
   };
   reader.readAsText(file);
+});
+
+// Ajustes: Accesibilidad y Recetas
+btnFontNormal.addEventListener('click', () => { currentFontSize = 'normal'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+btnFontLarge.addEventListener('click', () => { currentFontSize = 'large'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+btnFontXlarge.addEventListener('click', () => { currentFontSize = 'xlarge'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+
+btnOpenHistory.addEventListener('click', () => {
+  showView('view-history');
+  renderHistoryView();
+});
+
+btnBackHistory.addEventListener('click', () => showView('view-settings'));
+
+function renderHistoryView() {
+  historyListContainer.innerHTML = '';
+  if (dishHistory.length === 0) {
+    historyListContainer.innerHTML = '<p class="no-meals">NO HAY RECETAS GUARDADAS.</p>';
+    return;
+  }
+  
+  const sortedHistory = [...dishHistory].sort((a,b) => a.localeCompare(b));
+  
+  sortedHistory.forEach(dish => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <span>${dish}</span>
+      <button class="btn-del-history" data-dish="${dish}" aria-label="Eliminar receta">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    `;
+    historyListContainer.appendChild(div);
+  });
+  
+  document.querySelectorAll('.btn-del-history').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dishToDel = btn.getAttribute('data-dish');
+      if(confirm(`¿Eliminar '${dishToDel}' del historial?`)){
+        dishHistory = dishHistory.filter(d => d !== dishToDel);
+        saveData();
+        renderHistoryView();
+      }
+    });
+  });
+}
+
+// Ajustes: Nuevas Funciones
+autoPurgeInput.checked = autoPurge;
+autoPurgeInput.addEventListener('change', (e) => {
+  autoPurge = e.target.checked;
+  localStorage.setItem('autoPurge', autoPurge);
+  if (autoPurge) {
+    initMockData(); // Ejecuta la purga
+    renderMainView();
+  }
+});
+
+btnResetMenus.addEventListener('click', () => {
+  if (confirm("🚨 ¿Seguro que quieres borrar TODOS los menús planificados?\n\nEsta acción no se puede deshacer.")) {
+    plannedMeals = {};
+    saveData();
+    renderMainView();
+    alert("Todos los menús han sido borrados.");
+  }
+});
+
+btnResetHistory.addEventListener('click', () => {
+  if (confirm("🚨 ¿Seguro que quieres borrar tu HISTORIAL de platos sugeridos?\n\nEsta acción no se puede deshacer.")) {
+    dishHistory = [];
+    saveData();
+    alert("Historial de sugerencias borrado.");
+  }
+});
+
+btnPrint.addEventListener('click', () => {
+  showView('view-main');
+  setTimeout(() => window.print(), 300);
+});
+
+btnShopping.addEventListener('click', () => {
+  if (Object.keys(plannedMeals).length === 0) {
+    alert("No hay menús planificados para hacer la lista.");
+    return;
+  }
+  
+  const dates = Object.keys(plannedMeals).sort();
+  const allDishes = new Set();
+  
+  dates.forEach(dateStr => {
+    const dayData = plannedMeals[dateStr];
+    dayData.lunch.forEach(d => allDishes.add(d));
+    dayData.dinner.forEach(d => allDishes.add(d));
+  });
+  
+  let listText = "🛒 *LISTA DE LA COMPRA*\n\nIngredientes para:\n";
+  allDishes.forEach(dish => {
+    listText += `☐ ${dish}\n`;
+  });
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(listText).then(() => {
+      alert("¡Lista de la compra copiada al portapapeles!\n\nPégala en tus notas o WhatsApp.");
+    }).catch(() => {
+      alert("Error al copiar al portapapeles.");
+    });
+  }
 });
 
 // Inicialización
