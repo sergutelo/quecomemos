@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quecomemos-v2';
+const CACHE_NAME = 'quecomemos-v3';
 const urlsToCache = [
   './',
   './index.html',
