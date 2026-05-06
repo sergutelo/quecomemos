@@ -1,5 +1,6 @@
 {
   "name": "Quecomemos",
+  "version": "1.3",
   "short_name": "Quecomemos",
   "description": "Planificador minimalista de menús semanales estilo Bauhaus",
   "start_url": "./index.html",
