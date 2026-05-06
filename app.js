@@ -232,6 +232,9 @@ function renderMainView() {
     
     const container = document.createElement('div');
     container.className = 'day-container';
+    if (getDayName(dateStr) === 'HOY') {
+      container.classList.add('is-today');
+    }
     container.innerHTML = `
       <div class="day-header">
         <div class="day-name">${getDayName(dateStr)}</div>
@@ -341,6 +344,26 @@ function renderSuggestions() {
   createSuggestionBtns(suggestions1, mealDish1Input);
   createSuggestionBtns(suggestions2, mealDish2Input);
 }
+
+// Lógica de filtrado en tiempo real para las sugerencias
+function setupSuggestionFiltering() {
+  const filterSuggestions = (inputElem, container) => {
+    inputElem.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const btns = container.querySelectorAll('.suggestion-btn');
+      btns.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(query)) {
+          btn.style.display = 'inline-block';
+        } else {
+          btn.style.display = 'none';
+        }
+      });
+    });
+  };
+  filterSuggestions(mealDish1Input, suggestions1);
+  filterSuggestions(mealDish2Input, suggestions2);
+}
+setupSuggestionFiltering();
 
 // Manejo de Datos
 function saveData() {
