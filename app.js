@@ -334,30 +334,6 @@ function renderSuggestions() {
         inputTarget.value = dish;
       });
 
-      // Long press (móvil) o Click derecho (PC) para borrar historial
-      btn.addEventListener('contextmenu', (e) => {
-        e.preventDefault(); // Evitar el menú nativo
-        const confirmar = confirm(`¿Quieres eliminar '${dish}' del historial de sugerencias?`);
-        if (confirmar) {
-          dishHistory = dishHistory.filter(d => d !== dish);
-          saveData();
-          renderSuggestions();
-        }
-      });
-
-      // Implementación alternativa para móviles antiguos (polyfill de long press)
-      let pressTimer;
-      btn.addEventListener('touchstart', (e) => {
-        pressTimer = setTimeout(() => {
-          // Si pasan 600ms sin soltar el dedo, forzamos el contextmenu event
-          const event = new Event('contextmenu');
-          btn.dispatchEvent(event);
-        }, 600);
-      }, {passive: true});
-      
-      btn.addEventListener('touchend', () => clearTimeout(pressTimer));
-      btn.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
       container.appendChild(btn);
     });
   };
