@@ -519,6 +519,33 @@ html.font-xlarge { font-size: 20px; }
   cursor: pointer;
 }
 
+/* Modal Compartir */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+.modal-content {
+  background: var(--bg-card);
+  border: var(--border-width) solid var(--c-black);
+  box-shadow: 8px 8px 0px 0px var(--c-black);
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 @media (max-width: 480px) {
   h1 { font-size: 1.8rem; }
   .view { padding: 24px 16px; }
