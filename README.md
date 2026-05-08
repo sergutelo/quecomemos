@@ -13,15 +13,15 @@ El diseño de la aplicación no es meramente un layout, es una composición. Ins
 
 ## ✨ Características Principales
 
-* **Planificación Sencilla:** Cuadrícula de Lunes a Domingo dividida en Comida y Cena.
-* **100% Privado y Offline (PWA):** Todos los datos se guardan exclusivamente en el `localStorage` de tu navegador. No hay bases de datos externas, no hace falta registro y funciona perfectamente sin conexión a internet. Instalable como aplicación nativa en iOS y Android.
+* **Planificación sin Límites (Modo Acordeón):** Visualiza y planifica hasta 10 días vista con un diseño de acordeón colapsable que mantiene la interfaz limpia y rápida.
+* **100% Privado y Offline (PWA):** Todos los datos se guardan exclusivamente en el `localStorage` de tu navegador. No hay bases de datos externas, no hace falta registro y funciona perfectamente sin conexión a internet.
+* **Sincronización P2P "Mágica" (Código QR):** Sincroniza el menú de los próximos días de un móvil a otro al instante usando la cámara. Los menús compartidos se fusionan inteligentemente sin borrar tus datos previos.
+* **QC Analytics (Dashboard Integrado):** Aprovecha la potencia visual de Chart.js para analizar el histórico de tus platos, la evolución mensual de tu planificación y descubrir cuáles son tus recetas favoritas o las menos cocinadas.
 * **Asistente Inteligente (Libro de Recetas):** La app aprende tus platos. Todo lo que escribes se guarda en un historial, y te lo sugiere a medida que tecleas en días futuros. Incluye un gestor para limpiar este recetario.
-* **Compartir y Exportar:** Copia todo tu menú semanal con formato limpio (ideal para pegar en WhatsApp o enviar por correo) con un solo clic.
+* **Compartir y Exportar:** Copia todo tu menú semanal con formato limpio (ideal para enviar por WhatsApp) o compártelo mediante un archivo de copia de seguridad (`.json`).
 * **Lista de la Compra Automática:** Extrae todos los platos de tu semana y te genera una "checklist" copiable al portapapeles sin platos duplicados.
-* **Modo Impresión Ahorro de Tinta:** Al enviar a imprimir (`Ctrl+P`), la app descarta todo el esquema de color oscuro y diseño web, y lo formatea en una tabla limpia, minimalista y en blanco y negro, perfecta para pegar en la nevera.
-* **Mantenimiento Autónomo:** Opción de "Auto-Purga" que borra automáticamente los platos de días pasados cada vez que abres la app.
-* **Accesibilidad Total:** Control de tamaño de letra de la interfaz para adaptarse a cualquier usuario.
-* **Copias de Seguridad:** Exporta e importa todos tus datos en un archivo `.json` para pasarlos de un dispositivo a otro.
+* **Modo Impresión Ahorro de Tinta:** Al enviar a imprimir (`Ctrl+P`), la app descarta todo el esquema de color y lo formatea en una tabla en blanco y negro, perfecta para la nevera.
+* **Mantenimiento Autónomo:** Opción de "Auto-Purga" que borra automáticamente los platos de días pasados al abrir la app para mantener el almacenamiento optimizado.
 
 ---
 
