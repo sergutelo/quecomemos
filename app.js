@@ -463,13 +463,30 @@ btnSave.addEventListener('click', () => {
   showView('view-main');
 });
 
-// Compartir Menú
-btnShare.addEventListener('click', async () => {
+// Modal de Compartir
+const shareModal = document.getElementById('share-modal');
+const btnCloseShare = document.getElementById('btn-close-share');
+const btnShareText = document.getElementById('btn-share-text');
+const btnShareQr = document.getElementById('btn-share-qr');
+const qrContainer = document.getElementById('qr-container');
+const qrcodeElem = document.getElementById('qrcode');
+let currentQrCode = null;
+
+btnShare.addEventListener('click', () => {
   if (Object.keys(plannedMeals).length === 0) {
     alert("Aún no has planificado ningún menú para compartir.");
     return;
   }
+  qrContainer.style.display = 'none';
+  shareModal.style.display = 'flex';
+});
 
+btnCloseShare.addEventListener('click', () => {
+  shareModal.style.display = 'none';
+});
+
+// Compartir Menú por Texto
+btnShareText.addEventListener('click', async () => {
   let shareText = "🗓️ *NUESTRO MENÚ SEMANAL*\n\n";
   const dates = Object.keys(plannedMeals).sort();
   
@@ -504,12 +521,48 @@ btnShare.addEventListener('click', async () => {
         text: shareText
       });
     } catch (err) {
-      console.log('Compartir nativo cancelado o fallido', err);
       copyToClipboard();
     }
   } else {
     copyToClipboard();
   }
+});
+
+// Compartir por QR
+btnShareQr.addEventListener('click', () => {
+  const todayDateStr = new Date().toISOString().split('T')[0];
+  const futureMeals = {};
+  
+  Object.keys(plannedMeals).forEach(date => {
+    if (date >= todayDateStr) {
+      futureMeals[date] = plannedMeals[date];
+    }
+  });
+  
+  const dataStr = JSON.stringify(futureMeals);
+  const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
+  const url = window.location.origin + window.location.pathname + '?import=' + base64Data;
+  
+  if (currentQrCode) {
+    currentQrCode.clear();
+    qrcodeElem.innerHTML = '';
+  }
+  
+  if (url.length > 2000) {
+    alert("Tienes demasiados días planificados para un solo código QR. Por favor, usa la opción de exportar datos en Ajustes.");
+    return;
+  }
+  
+  currentQrCode = new QRCode(qrcodeElem, {
+    text: url,
+    width: 250,
+    height: 250,
+    colorDark : "#121212",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+  
+  qrContainer.style.display = 'block';
 });
 
 // Exportar Datos
@@ -704,3 +757,41 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// Recibir datos mágicos por QR
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('import')) {
+    const base64Data = urlParams.get('import');
+    try {
+      const importedDataStr = decodeURIComponent(escape(atob(base64Data)));
+      const importedMeals = JSON.parse(importedDataStr);
+      
+      setTimeout(() => {
+        if (confirm("✨ ¡Alguien ha compartido un menú contigo!\n\n¿Quieres importarlo ahora y fusionarlo con el tuyo?")) {
+          // Fusionar
+          Object.keys(importedMeals).forEach(date => {
+            if (!plannedMeals[date]) plannedMeals[date] = { lunch: [], dinner: [] };
+            
+            importedMeals[date].lunch.forEach(dish => {
+               if(!plannedMeals[date].lunch.includes(dish)) plannedMeals[date].lunch.push(dish);
+               addToHistory(dish);
+            });
+            importedMeals[date].dinner.forEach(dish => {
+               if(!plannedMeals[date].dinner.includes(dish)) plannedMeals[date].dinner.push(dish);
+               addToHistory(dish);
+            });
+          });
+          
+          saveData();
+          renderMainView();
+          alert("✅ Menú importado con éxito.");
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 500); // Dar tiempo a que la app cargue
+    } catch (e) {
+      alert("❌ Error al leer el código QR mágico.");
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+});
