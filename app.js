@@ -223,30 +223,39 @@ function renderMainView() {
   daysList.innerHTML = '';
   const today = new Date();
   
-  for (let i = 0; i <= 5; i++) {
+  for (let i = 0; i <= 9; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     const dateStr = d.toISOString().split('T')[0];
     
     const dayData = plannedMeals[dateStr] || { lunch: [], dinner: [] };
     
+    const isExpanded = (i === 0 || i === 1);
+    const expandClass = isExpanded ? 'expanded' : 'collapsed';
+
     const container = document.createElement('div');
     container.className = 'day-container';
     if (getDayName(dateStr) === 'HOY') {
       container.classList.add('is-today');
     }
     container.innerHTML = `
-      <div class="day-header">
-        <div class="day-name">${getDayName(dateStr)}</div>
-        <div class="day-date">${getFormattedDate(dateStr)}</div>
+      <div class="day-header accordion-toggle" data-index="${i}">
+        <div class="day-header-info">
+          <div class="day-name">${getDayName(dateStr)}</div>
+          <div class="day-date">${getFormattedDate(dateStr)}</div>
+        </div>
+        <div class="accordion-icon ${expandClass}">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
       </div>
-      <div class="meal-cards-wrapper">
+      <div class="meal-cards-wrapper ${expandClass}">
         ${renderMealCard(dateStr, 'lunch', dayData.lunch, '', 'COMIDA')}
         ${renderMealCard(dateStr, 'dinner', dayData.dinner, '', 'CENA')}
       </div>
     `;
     daysList.appendChild(container);
   }
+
   
   // Botones de borrar clásicos (para ratón/escritorio)
   document.querySelectorAll('.btn-delete').forEach(btn => {
@@ -256,6 +265,27 @@ function renderMainView() {
       const type = btn.getAttribute('data-type');
       const index = btn.getAttribute('data-index');
       deleteMeal(date, type, index);
+    });
+  });
+
+  // Accordion Logic
+  document.querySelectorAll('.accordion-toggle').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const icon = toggle.querySelector('.accordion-icon');
+      const wrapper = toggle.nextElementSibling;
+      const isCollapsed = icon.classList.contains('collapsed');
+      
+      if (isCollapsed) {
+        icon.classList.remove('collapsed');
+        icon.classList.add('expanded');
+        wrapper.classList.remove('collapsed');
+        wrapper.classList.add('expanded');
+      } else {
+        icon.classList.remove('expanded');
+        icon.classList.add('collapsed');
+        wrapper.classList.remove('expanded');
+        wrapper.classList.add('collapsed');
+      }
     });
   });
 

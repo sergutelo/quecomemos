@@ -170,13 +170,50 @@ header {
   border: 2px solid var(--c-black);
 }
 
-/* Day Header */
+/* Day Header & Accordion */
 .day-header {
   border-bottom: var(--border-width) solid var(--c-black);
   padding-bottom: 8px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
+}
+.accordion-toggle {
+  cursor: pointer;
+  user-select: none;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.accordion-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--c-black);
+  border-radius: 9999px;
+  background-color: var(--c-yellow);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 2px 0 0 var(--c-black);
+  flex-shrink: 0;
+}
+.accordion-icon.collapsed {
+  transform: rotate(-90deg);
+}
+.meal-cards-wrapper {
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+.meal-cards-wrapper.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.meal-cards-wrapper.expanded {
+  max-height: 2500px;
+  opacity: 1;
+  pointer-events: auto;
 }
 .day-name {
   font-weight: 900;
