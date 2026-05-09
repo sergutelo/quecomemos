@@ -53,15 +53,16 @@ let currentFontSize = localStorage.getItem('fontSize') || 'normal';
 let currentTheme = localStorage.getItem('theme') || 'system';
 
 function applyFontSize(size) {
-  // Solo eliminamos las clases de fuente, no el resto
   document.documentElement.classList.remove('font-large', 'font-xlarge');
   if (size === 'large') document.documentElement.classList.add('font-large');
   if (size === 'xlarge') document.documentElement.classList.add('font-xlarge');
   
-  document.querySelectorAll('#btn-font-normal, #btn-font-large, #btn-font-xlarge').forEach(b => b.classList.remove('active-font'));
-  if (size === 'normal' && btnFontNormal) btnFontNormal.classList.add('active-font');
-  if (size === 'large' && btnFontLarge) btnFontLarge.classList.add('active-font');
-  if (size === 'xlarge' && btnFontXlarge) btnFontXlarge.classList.add('active-font');
+  document.querySelectorAll('#btn-font-normal, #btn-font-large, #btn-font-xlarge').forEach(b => {
+    if (b) b.classList.remove('active-font');
+  });
+  
+  const activeBtn = document.getElementById('btn-font-' + size);
+  if (activeBtn) activeBtn.classList.add('active-font');
 }
 
 function applyTheme(theme) {
@@ -69,14 +70,14 @@ function applyTheme(theme) {
   localStorage.setItem('theme', theme);
   
   const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   
-  // Actualizar UI de botones
-  document.querySelectorAll('#btn-theme-light, #btn-theme-dark, #btn-theme-system').forEach(b => b.classList.remove('active-font'));
-  if (theme === 'light' && btnThemeLight) btnThemeLight.classList.add('active-font');
-  if (theme === 'dark' && btnThemeDark) btnThemeDark.classList.add('active-font');
-  if (theme === 'system' && btnThemeSystem) btnThemeSystem.classList.add('active-font');
+  document.querySelectorAll('#btn-theme-light, #btn-theme-dark, #btn-theme-system').forEach(b => {
+    if (b) b.classList.remove('active-font');
+  });
+  
+  const activeBtn = document.getElementById('btn-theme-' + theme);
+  if (activeBtn) activeBtn.classList.add('active-font');
 }
 
 // Inicializar preferencias
@@ -676,13 +677,13 @@ fileImport.addEventListener('change', (event) => {
 });
 
 // Ajustes: Accesibilidad y Recetas
-btnFontNormal.addEventListener('click', () => { currentFontSize = 'normal'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
-btnFontLarge.addEventListener('click', () => { currentFontSize = 'large'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
-btnFontXlarge.addEventListener('click', () => { currentFontSize = 'xlarge'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+if (btnFontNormal) btnFontNormal.addEventListener('click', () => { currentFontSize = 'normal'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+if (btnFontLarge) btnFontLarge.addEventListener('click', () => { currentFontSize = 'large'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+if (btnFontXlarge) btnFontXlarge.addEventListener('click', () => { currentFontSize = 'xlarge'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
 
-btnThemeLight.addEventListener('click', () => applyTheme('light'));
-btnThemeDark.addEventListener('click', () => applyTheme('dark'));
-btnThemeSystem.addEventListener('click', () => applyTheme('system'));
+if (btnThemeLight) btnThemeLight.addEventListener('click', () => applyTheme('light'));
+if (btnThemeDark) btnThemeDark.addEventListener('click', () => applyTheme('dark'));
+if (btnThemeSystem) btnThemeSystem.addEventListener('click', () => applyTheme('system'));
 
 btnOpenHistory.addEventListener('click', () => {
   showView('view-history');
@@ -795,20 +796,28 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(reg => {
       
-      // Detectar actualizaciones
+      const showUpdateBanner = (worker) => {
+        const toast = document.getElementById('update-toast');
+        const btnUpdate = document.getElementById('btn-update-app');
+        if (toast && btnUpdate) {
+          toast.style.display = 'flex';
+          btnUpdate.onclick = () => {
+            worker.postMessage({ type: 'SKIP_WAITING' });
+          };
+        }
+      };
+
+      // 1. Si ya hay uno esperando (la muchacha debería salir al abrir)
+      if (reg.waiting) {
+        showUpdateBanner(reg.waiting);
+      }
+
+      // 2. Si se encuentra uno nuevo mientras la app está abierta
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // Hay una nueva versión disponible
-            const toast = document.getElementById('update-toast');
-            const btnUpdate = document.getElementById('btn-update-app');
-            
-            toast.style.display = 'flex';
-            
-            btnUpdate.addEventListener('click', () => {
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
-            });
+            showUpdateBanner(newWorker);
           }
         });
       });
