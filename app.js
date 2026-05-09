@@ -468,6 +468,7 @@ const shareModal = document.getElementById('share-modal');
 const btnCloseShare = document.getElementById('btn-close-share');
 const btnShareText = document.getElementById('btn-share-text');
 const btnShareQr = document.getElementById('btn-share-qr');
+const btnShareWatch = document.getElementById('btn-share-watch');
 const qrContainer = document.getElementById('qr-container');
 const qrcodeElem = document.getElementById('qrcode');
 let currentQrCode = null;
@@ -563,6 +564,39 @@ btnShareQr.addEventListener('click', () => {
   });
   
   qrContainer.style.display = 'block';
+});
+
+// Sincronizar con Reloj (Vía App Puente)
+btnShareWatch.addEventListener('click', () => {
+  const todayDateStr = new Date().toISOString().split('T')[0];
+  const futureMeals = {};
+  
+  // Solo mandamos desde hoy en adelante para no saturar el buffer
+  Object.keys(plannedMeals).forEach(date => {
+    if (date >= todayDateStr) {
+      futureMeals[date] = plannedMeals[date];
+    }
+  });
+
+  if (Object.keys(futureMeals).length === 0) {
+    alert("No hay menús futuros para sincronizar.");
+    return;
+  }
+
+  const dataStr = JSON.stringify(futureMeals);
+  // Codificación Base64 segura para URL
+  const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
+  
+  // Intentar abrir el esquema de la App Puente
+  const syncUrl = `quecomemos://sync?data=${base64Data}`;
+  
+  window.location.href = syncUrl;
+
+  // Feedback visual
+  setTimeout(() => {
+    shareModal.style.display = 'none';
+    alert("Intentando conectar con el reloj...\n\nSi no tienes la app puente instalada, no ocurrirá nada.");
+  }, 500);
 });
 
 // Exportar Datos
