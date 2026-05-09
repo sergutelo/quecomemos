@@ -1,12 +1,29 @@
 :root {
-  --bg-canvas: #F0F0F0;
-  --bg-card: #ffffff;
-  --c-black: #121212;
+  /* Colores Fijos Bauhaus */
   --c-red: #D02020;
   --c-blue: #1040C0;
   --c-yellow: #F0C020;
   --border-width: 3px;
   --shadow-offset: 6px;
+}
+
+/* TEMA CLARO (Default) */
+:root, [data-theme="light"] {
+  --bg-canvas: #F0F0F0;
+  --bg-card: #ffffff;
+  --c-black: #121212;
+  --c-text: #121212;
+  --c-dot: rgba(0,0,0,0.1);
+}
+
+/* TEMA OSCURO */
+[data-theme="dark"] {
+  --bg-canvas: #121212;
+  --bg-card: #1E1E1E;
+  --c-black: #F0F0F0; /* Invertimos el "negro" para bordes y texto */
+  --c-text: #F0F0F0;
+  --c-dot: rgba(255,255,255,0.05);
+  --c-yellow: #FFD700; /* Un poco más brillante en oscuro */
 }
 
 @media (min-width: 768px) {
@@ -26,13 +43,14 @@
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg-canvas);
-  color: var(--c-black);
+  color: var(--c-text);
   line-height: 1.4;
   overflow-x: hidden;
-  /* Bauhaus Pattern */
-  background-image: radial-gradient(var(--c-black) 1px, transparent 1px);
+  /* Bauhaus Pattern dinámico */
+  background-image: radial-gradient(var(--c-dot) 1.5px, transparent 1.5px);
   background-size: 24px 24px;
   background-position: 0 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Typography */

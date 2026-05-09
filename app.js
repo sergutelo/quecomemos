@@ -41,23 +41,52 @@ const btnFontNormal = document.getElementById('btn-font-normal');
 const btnFontLarge = document.getElementById('btn-font-large');
 const btnFontXlarge = document.getElementById('btn-font-xlarge');
 
+// Botones de Tema
+const btnThemeLight = document.getElementById('btn-theme-light');
+const btnThemeDark = document.getElementById('btn-theme-dark');
+const btnThemeSystem = document.getElementById('btn-theme-system');
+
 // Ajuste local
+// Estado persistente
 let autoPurge = localStorage.getItem('autoPurge') === 'true';
 let currentFontSize = localStorage.getItem('fontSize') || 'normal';
+let currentTheme = localStorage.getItem('theme') || 'system';
 
 function applyFontSize(size) {
-  document.documentElement.className = '';
+  // Solo eliminamos las clases de fuente, no el resto
+  document.documentElement.classList.remove('font-large', 'font-xlarge');
   if (size === 'large') document.documentElement.classList.add('font-large');
   if (size === 'xlarge') document.documentElement.classList.add('font-xlarge');
   
-  if (btnFontNormal) {
-    document.querySelectorAll('.btn-font').forEach(b => b.classList.remove('active-font'));
-    if (size === 'normal') btnFontNormal.classList.add('active-font');
-    if (size === 'large') btnFontLarge.classList.add('active-font');
-    if (size === 'xlarge') btnFontXlarge.classList.add('active-font');
-  }
+  document.querySelectorAll('#btn-font-normal, #btn-font-large, #btn-font-xlarge').forEach(b => b.classList.remove('active-font'));
+  if (size === 'normal' && btnFontNormal) btnFontNormal.classList.add('active-font');
+  if (size === 'large' && btnFontLarge) btnFontLarge.classList.add('active-font');
+  if (size === 'xlarge' && btnFontXlarge) btnFontXlarge.classList.add('active-font');
 }
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('theme', theme);
+  
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  
+  // Actualizar UI de botones
+  document.querySelectorAll('#btn-theme-light, #btn-theme-dark, #btn-theme-system').forEach(b => b.classList.remove('active-font'));
+  if (theme === 'light' && btnThemeLight) btnThemeLight.classList.add('active-font');
+  if (theme === 'dark' && btnThemeDark) btnThemeDark.classList.add('active-font');
+  if (theme === 'system' && btnThemeSystem) btnThemeSystem.classList.add('active-font');
+}
+
+// Inicializar preferencias
 applyFontSize(currentFontSize);
+applyTheme(currentTheme);
+
+// Escuchar cambios de sistema en tiempo real si el tema es 'system'
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (currentTheme === 'system') applyTheme('system');
+});
 
 // Iconos SVG
 const iconTrash = `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
@@ -650,6 +679,10 @@ fileImport.addEventListener('change', (event) => {
 btnFontNormal.addEventListener('click', () => { currentFontSize = 'normal'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
 btnFontLarge.addEventListener('click', () => { currentFontSize = 'large'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
 btnFontXlarge.addEventListener('click', () => { currentFontSize = 'xlarge'; localStorage.setItem('fontSize', currentFontSize); applyFontSize(currentFontSize); });
+
+btnThemeLight.addEventListener('click', () => applyTheme('light'));
+btnThemeDark.addEventListener('click', () => applyTheme('dark'));
+btnThemeSystem.addEventListener('click', () => applyTheme('system'));
 
 btnOpenHistory.addEventListener('click', () => {
   showView('view-history');

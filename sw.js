@@ -1,9 +1,11 @@
-const CACHE_NAME = 'quecomemos-v14';
+const CACHE_NAME = 'quecomemos-v16';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './dashboard.html',
+  './dashboard.js',
   './manifest.json',
   './icon.png',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap'
