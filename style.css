@@ -13,17 +13,21 @@
   --bg-card: #ffffff;
   --c-black: #121212;
   --c-text: #121212;
+  --c-inv-text: #ffffff; /* Texto sobre fondo "negro" */
   --c-dot: rgba(0,0,0,0.1);
+  --shadow-color: #121212;
 }
 
 /* TEMA OSCURO */
 [data-theme="dark"] {
-  --bg-canvas: #121212;
-  --bg-card: #1E1E1E;
-  --c-black: #F0F0F0; /* Invertimos el "negro" para bordes y texto */
-  --c-text: #F0F0F0;
+  --bg-canvas: #0A0A0A; /* Negro más profundo */
+  --bg-card: #1A1A1A;   /* Gris muy oscuro */
+  --c-black: #F0F0F0;   /* Los bordes y acentos ahora son claros */
+  --c-text: #F0F0F0;    /* El texto general es claro */
+  --c-inv-text: #121212; /* El texto sobre fondo "claro" debe ser negro */
   --c-dot: rgba(255,255,255,0.05);
-  --c-yellow: #FFD700; /* Un poco más brillante en oscuro */
+  --shadow-color: #000000;
+  --c-yellow: #FFD700;
 }
 
 @media (min-width: 768px) {
@@ -77,7 +81,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0px var(--shadow-offset) 0px 0px var(--c-black);
+  box-shadow: 0px var(--shadow-offset) 0px 0px var(--shadow-color);
   margin-bottom: var(--shadow-offset);
 }
 
@@ -106,14 +110,12 @@ header {
 .logo-shape.triangle {
   left: 20px; z-index: 1; border-radius: 0; border: none;
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  /* Trick to give triangle border: not natively possible with clip-path alone easily, so we use drop-shadow or pseudo */
-  /* For Bauhaus, simple solid block is fine here */
   width: 24px; height: 24px; top: 0;
 }
 
 .bg-red { background-color: var(--c-red) !important; color: white; }
 .bg-blue { background-color: var(--c-blue) !important; color: white; }
-.bg-yellow { background-color: var(--c-yellow) !important; color: var(--c-black); }
+.bg-yellow { background-color: var(--c-yellow) !important; color: #121212; }
 
 /* Actions */
 .header-actions {
@@ -125,18 +127,18 @@ header {
   width: 48px;
   height: 48px;
   border: var(--border-width) solid var(--c-black);
-  box-shadow: 4px 4px 0px 0px var(--c-black);
+  box-shadow: 4px 4px 0px 0px var(--shadow-color);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
-  border-radius: 0; /* Square button */
+  border-radius: 0;
 }
 
 .icon-btn:active {
   transform: translate(4px, 4px);
-  box-shadow: 0px 0px 0px 0px var(--c-black);
+  box-shadow: 0px 0px 0px 0px var(--shadow-color);
 }
 
 /* Container */
@@ -167,12 +169,12 @@ header {
 .day-card {
   background-color: var(--bg-card);
   border: var(--border-width) solid var(--c-black);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--c-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--shadow-color);
   padding: 24px;
   margin-bottom: 32px;
   position: relative;
   transition: transform 0.2s ease-out;
-  border-radius: 0; /* Bauhaus square */
+  border-radius: 0;
 }
 .day-card:hover {
   transform: translateY(-4px);
@@ -213,7 +215,7 @@ header {
   border-radius: 9999px;
   background-color: var(--c-yellow);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 2px 2px 0 0 var(--c-black);
+  box-shadow: 2px 2px 0 0 var(--shadow-color);
   flex-shrink: 0;
 }
 .accordion-icon.collapsed {
@@ -238,14 +240,14 @@ header {
   font-size: 2.5rem;
   text-transform: uppercase;
   letter-spacing: -0.05em;
-  color: var(--c-black);
+  color: var(--c-text);
 }
 .day-date {
   font-weight: 700;
   font-size: 1.2rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--c-black);
+  color: var(--c-text);
   margin-top: 4px;
 }
 
@@ -261,7 +263,7 @@ header {
   align-items: center;
   gap: 12px;
   background-color: var(--c-black);
-  color: white;
+  color: var(--c-inv-text);
   padding: 8px 12px;
   width: fit-content;
 }
