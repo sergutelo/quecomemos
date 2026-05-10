@@ -618,12 +618,11 @@ btnShareQr.addEventListener('click', () => {
   qrContainer.style.display = 'block';
 });
 
-// Sincronizar con Reloj (Vía App Puente)
+// Sincronizar con Reloj (Vía App Puente - Mejorado)
 btnShareWatch.addEventListener('click', () => {
   const todayDateStr = new Date().toISOString().split('T')[0];
   const futureMeals = {};
   
-  // Solo mandamos desde hoy en adelante para no saturar el buffer
   Object.keys(plannedMeals).forEach(date => {
     if (date >= todayDateStr) {
       futureMeals[date] = plannedMeals[date];
@@ -636,20 +635,24 @@ btnShareWatch.addEventListener('click', () => {
   }
 
   const dataStr = JSON.stringify(futureMeals);
-  // Codificación Base64 segura para URL
   const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
   
-  // Intentar abrir el esquema de la App Puente
-  const syncUrl = `quecomemos://sync?data=${base64Data}`;
+  // Codificar para URL segura
+  const encodedData = encodeURIComponent(base64Data);
+  const syncUrl = `quecomemos://sync?data=${encodedData}`;
   
-  window.location.href = syncUrl;
-
-  // Feedback visual
+  // Lanzar el enlace de forma robusta
+  const a = document.createElement('a');
+  a.href = syncUrl;
+  document.body.appendChild(a);
+  a.click();
+  
   setTimeout(() => {
+    document.body.removeChild(a);
     shareModal.style.display = 'none';
-    alert("Intentando conectar con el reloj...\n\nSi no tienes la app puente instalada, no ocurrirá nada.");
   }, 500);
 });
+
 
 // Exportar Datos
 btnExport.addEventListener('click', () => {
@@ -823,7 +826,7 @@ if ('serviceWorker' in navigator) {
       const btnUpdate = document.getElementById('btn-update-app');
       if (!toast || !btnUpdate) return;
 
-      setTimeout(() => { toast.style.display = 'flex'; }, 400);
+      setTimeout(() => { toast.style.setProperty('display', 'flex', 'important'); }, 400);
 
       btnUpdate.onclick = () => {
         userRequestedUpdate = true;
@@ -885,14 +888,20 @@ if ('serviceWorker' in navigator) {
         
         console.log(`[PWA] Versión SW actual: ${newVersion} (Última conocida: ${lastVersion})`);
 
-        // Si hay una versión previa y no coincide, o si forzamos por URL para test
-        if ((lastVersion && lastVersion !== newVersion) || window.location.search.includes('forceUpdate=1')) {
+        // Si hay una versión previa y no coincide
+        if (lastVersion && lastVersion !== newVersion) {
           console.log("[PWA] ¡Detectada actualización! Mostrando banner...");
           showUpdateBanner(null);
         }
         localStorage.setItem('sw-version', newVersion);
       }
     });
+
+    // --- TEST MANUAL: Si entras con ?forceUpdate=1, mostramos el banner sí o sí ---
+    if (window.location.search.includes('forceUpdate=1')) {
+      console.log("[PWA] Modo TEST detectado (?forceUpdate=1). Forzando banner...");
+      showUpdateBanner(null);
+    }
 
     // Intentar pedir la versión y reintentar si el SW aún no controla la página
     if (!requestVersionFromSW()) {
