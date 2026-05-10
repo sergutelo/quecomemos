@@ -620,6 +620,18 @@ btnShareQr.addEventListener('click', () => {
 
 // Sincronizar con Reloj (Vía App Puente - Mejorado)
 btnShareWatch.addEventListener('click', () => {
+  const debugConsole = document.getElementById('debug-console');
+  const debugMsg = document.getElementById('debug-messages');
+  if (debugConsole) debugConsole.style.display = 'block';
+  if (debugMsg) debugMsg.innerHTML = '';
+
+  const log = (msg) => {
+    if (debugMsg) debugMsg.innerHTML += `<div>> ${msg}</div>`;
+    console.log(msg);
+  };
+
+  log("Iniciando sincronización...");
+
   const todayDateStr = new Date().toISOString().split('T')[0];
   const futureMeals = {};
   
@@ -630,28 +642,39 @@ btnShareWatch.addEventListener('click', () => {
   });
 
   if (Object.keys(futureMeals).length === 0) {
+    log("ERROR: No hay menús futuros.");
     alert("No hay menús futuros para sincronizar.");
     return;
   }
 
   const dataStr = JSON.stringify(futureMeals);
+  log(`Datos JSON: ${dataStr.length} chars`);
+
   const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
+  log(`Base64: ${base64Data.length} chars`);
   
-  // Codificar para URL segura
   const encodedData = encodeURIComponent(base64Data);
   const syncUrl = `quecomemos://sync?data=${encodedData}`;
+  log(`URL Total: ${syncUrl.length} chars`);
   
-  // Lanzar el enlace de forma robusta
+  if (syncUrl.length > 5000) {
+    log("AVISO: La URL es muy larga (>5000), puede fallar en algunos dispositivos.");
+  }
+
   const a = document.createElement('a');
   a.href = syncUrl;
   document.body.appendChild(a);
+  
+  log("Lanzando Intent...");
   a.click();
   
   setTimeout(() => {
     document.body.removeChild(a);
-    shareModal.style.display = 'none';
-  }, 500);
+    log("Proceso terminado localmente.");
+    // No cerramos el modal inmediatamente para que se pueda leer el log si hay error
+  }, 1000);
 });
+
 
 
 // Exportar Datos
