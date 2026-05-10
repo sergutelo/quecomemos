@@ -794,62 +794,80 @@ renderMainView();
 // Registrar Service Worker y gestionar actualizaciones
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Flag: solo recargamos si el usuario pulsó "Actualizar"
     let userRequestedUpdate = false;
 
-    navigator.serviceWorker.register('sw.js').then(reg => {
+    const showUpdateBanner = (worker) => {
+      const toast = document.getElementById('update-toast');
+      const btnUpdate = document.getElementById('btn-update-app');
+      if (!toast || !btnUpdate) return;
 
-      const showUpdateBanner = (worker) => {
-        const toast = document.getElementById('update-toast');
-        const btnUpdate = document.getElementById('btn-update-app');
-        if (toast && btnUpdate) {
-          // Pequeño delay para asegurar que el DOM está listo y el toast se ve
-          setTimeout(() => {
-            toast.style.display = 'flex';
-          }, 300);
+      setTimeout(() => { toast.style.display = 'flex'; }, 400);
 
-          btnUpdate.onclick = () => {
-            userRequestedUpdate = true; // Marcamos que el usuario pidió la actualización
-            toast.style.display = 'none';
-            worker.postMessage({ type: 'SKIP_WAITING' });
-          };
+      btnUpdate.onclick = () => {
+        userRequestedUpdate = true;
+        toast.style.display = 'none';
+        if (worker) {
+          worker.postMessage({ type: 'SKIP_WAITING' });
+        } else {
+          // Actualización silenciosa: solo recargar
+          window.location.reload();
         }
       };
+    };
 
-      // 1. Si ya hay un SW en espera al abrir la app (la chica pop-art debe aparecer)
+    // ── Estrategia 1: actualización mientras la app está abierta ──────────
+    navigator.serviceWorker.register('sw.js').then(reg => {
+
+      // A) SW nuevo ya estaba esperando al abrir
       if (reg.waiting) {
         showUpdateBanner(reg.waiting);
       }
 
-      // 2. Si se descarga uno nuevo mientras la app está abierta
+      // B) SW nuevo se descarga mientras la app está abierta
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
-          // Solo mostrar el banner si hay un controlador activo (no es la primera instalación)
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             showUpdateBanner(newWorker);
           }
         });
       });
 
-      // Comprobar si hay actualizaciones pendientes cada vez que la app vuelve al foco
+      // Forzar comprobación de actualización al volver al foco
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          reg.update();
-        }
+        if (document.visibilityState === 'visible') reg.update();
       });
 
     }).catch(err => console.error('Error al registrar SW.', err));
 
-    // Solo recargamos si el usuario pulsó "Actualizar" explícitamente
-    // Esto evita que la página recargue sola sin que el usuario vea el modal
+    // Recargar solo si el usuario lo pidió explícitamente
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (userRequestedUpdate) {
-        window.location.reload();
+      if (userRequestedUpdate) window.location.reload();
+    });
+
+    // ── Estrategia 2: detectar actualización silenciosa entre sesiones ────
+    // El SW activo responde GET_VERSION → comparamos con lo guardado en localStorage
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'SW_VERSION') {
+        const newVersion = event.data.version;
+        const lastVersion = localStorage.getItem('sw-version');
+
+        if (lastVersion && lastVersion !== newVersion) {
+          // El SW se actualizó silenciosamente (entre sesiones) → mostrar banner
+          showUpdateBanner(null); // null = no hay worker que notificar, solo recargar
+        }
+        // Guardar versión actual para la próxima comparación
+        localStorage.setItem('sw-version', newVersion);
       }
     });
+
+    // Preguntar al SW activo cuál es su versión (si ya hay uno controlando)
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+    }
   });
 }
+
 
 // Recibir datos mágicos por QR
 window.addEventListener('DOMContentLoaded', () => {

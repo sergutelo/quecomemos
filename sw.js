@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quecomemos-v20';
+const CACHE_NAME = 'quecomemos-v21';
 const urlsToCache = [
   './',
   './index.html',
@@ -30,6 +30,9 @@ self.addEventListener('activate', event => {
           }
         })
       );
+    }).then(() => {
+      // Toma el control de todos los clientes inmediatamente
+      return self.clients.claim();
     })
   );
 });
@@ -49,5 +52,9 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  // Responde con la versión actual del SW para detectar actualizaciones silenciosas
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source.postMessage({ type: 'SW_VERSION', version: CACHE_NAME });
   }
 });
