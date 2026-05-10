@@ -115,7 +115,8 @@ header {
 
 .bg-red { background-color: var(--c-red) !important; color: white; }
 .bg-blue { background-color: var(--c-blue) !important; color: white; }
-.bg-yellow { background-color: var(--c-yellow) !important; color: #121212; }
+/* Amarillo: el texto SIEMPRE negro, incluso en dark mode */
+.bg-yellow { background-color: var(--c-yellow) !important; color: #121212 !important; }
 
 /* Actions */
 .header-actions {
@@ -214,6 +215,7 @@ header {
   border: 3px solid var(--c-black);
   border-radius: 9999px;
   background-color: var(--c-yellow);
+  color: #121212 !important; /* SVG stroke hereda este color en dark mode */
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 2px 2px 0 0 var(--shadow-color);
   flex-shrink: 0;
@@ -320,9 +322,52 @@ header {
   font-weight: 700;
   font-size: 1.2rem;
   text-transform: uppercase;
-  padding: 12px;
-  border: 2px dashed var(--c-black);
+  padding: 16px;
+  border: 3px dashed var(--c-black);
   text-align: center;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  color: var(--c-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.no-meals-tap {
+  cursor: pointer;
+}
+
+.no-meals-tap:hover {
+  background-color: var(--c-yellow);
+  color: #121212;
+  border-style: solid;
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px 0px var(--shadow-color);
+}
+
+.no-meals-tap:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--shadow-color);
+}
+
+.no-meals-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: var(--c-black);
+  color: var(--c-inv-text);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.no-meals-tap:hover .no-meals-icon {
+  background-color: #121212;
+  color: var(--c-yellow);
 }
 
 .btn-delete {
@@ -440,9 +485,15 @@ input:focus {
   width: 100%;
   padding: 18px;
   background-color: var(--c-yellow);
-  color: var(--c-black);
-  border: var(--border-width) solid var(--c-black);
-  box-shadow: 4px 4px 0px 0px var(--c-black);
+  /* Texto siempre negro sobre amarillo, en cualquier tema */
+  color: #121212 !important;
+  /* Contorno negro en las letras para máximo contraste */
+  text-shadow: -1px -1px 0 rgba(0,0,0,0.25),
+                1px -1px 0 rgba(0,0,0,0.25),
+               -1px  1px 0 rgba(0,0,0,0.25),
+                1px  1px 0 rgba(0,0,0,0.25);
+  border: var(--border-width) solid #121212;
+  box-shadow: 4px 4px 0px 0px #121212;
   font-family: 'Outfit', sans-serif;
   font-size: 1.4rem;
   font-weight: 900;
@@ -457,7 +508,7 @@ input:focus {
 }
 .btn-secondary:active {
   transform: translate(4px, 4px);
-  box-shadow: 0px 0px 0px 0px var(--c-black);
+  box-shadow: 0px 0px 0px 0px #121212;
 }
 
 .settings-desc {
@@ -516,8 +567,24 @@ input:focus {
 html.font-large { font-size: 18px; }
 html.font-xlarge { font-size: 20px; }
 
-.btn-font { flex: 1; padding: 12px; background: var(--bg-card); font-weight: 900; border: var(--border-width) solid var(--c-black); cursor: pointer; box-shadow: 4px 4px 0px 0px var(--c-black); transition: all 0.1s; font-family: 'Outfit', sans-serif;}
-.btn-font.active-font { background: var(--c-blue); color: white; transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--c-black); }
+.btn-font {
+  flex: 1; padding: 12px;
+  background: var(--bg-card);
+  /* En dark mode el fondo es oscuro (#1A1A1A), necesitamos texto claro explícito */
+  color: var(--c-text);
+  font-weight: 900;
+  border: var(--border-width) solid var(--c-black);
+  cursor: pointer;
+  box-shadow: 4px 4px 0px 0px var(--c-black);
+  transition: all 0.1s;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-font.active-font {
+  background: var(--c-blue);
+  color: white !important;
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--c-black);
+}
 
 /* History List */
 .history-list {

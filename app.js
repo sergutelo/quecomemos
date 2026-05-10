@@ -180,6 +180,17 @@ function showView(viewId) {
   }
 }
 
+// Abre el planificador con fecha y turno ya preseleccionados
+function openPlannerFor(dateStr, mealType) {
+  showView('view-add');             // Resetea defaults primero
+  mealDateInput.value = dateStr;    // Sobreescribimos con la fecha del día pulsado
+  mealDish1Input.value = '';
+  mealDish2Input.value = '';
+  const radio = document.getElementById(mealType === 'lunch' ? 'type-lunch' : 'type-dinner');
+  if (radio) radio.checked = true;
+  renderSuggestions();
+}
+
 fabAdd.addEventListener('click', () => showView('view-add'));
 btnBackAdd.addEventListener('click', () => showView('view-main'));
 btnSettings.addEventListener('click', () => showView('view-settings'));
@@ -224,7 +235,10 @@ function renderMealCard(dateStr, type, meals, icon, title) {
   let mealsHtml = '';
   
   if (!meals || meals.length === 0) {
-    mealsHtml = `<div class="no-meals">SIN PLANIFICAR</div>`;
+    // data-date y data-type permiten abrir el planificador con contexto al pulsar
+    mealsHtml = `<div class="no-meals no-meals-tap" data-date="${dateStr}" data-type="${type}" role="button" tabindex="0" aria-label="Planificar ${title} del ${dateStr}">
+      <span class="no-meals-icon">+</span> PLANIFICAR
+    </div>`;
   } else {
     mealsHtml = meals.map((meal, index) => `
       <div class="meal-item-container">
@@ -287,6 +301,14 @@ function renderMainView() {
   }
 
   
+  // Tap en "SIN PLANIFICAR" → abre planificador con fecha y turno preseleccionados
+  document.querySelectorAll('.no-meals-tap').forEach(el => {
+    const handler = () => openPlannerFor(el.dataset.date, el.dataset.type);
+    el.addEventListener('click', handler);
+    // Accesibilidad: teclado
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') handler(); });
+  });
+
   // Botones de borrar clásicos (para ratón/escritorio)
   document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
