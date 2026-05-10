@@ -618,7 +618,7 @@ btnShareQr.addEventListener('click', () => {
   qrContainer.style.display = 'block';
 });
 
-// Sincronizar con Reloj (Mejorado con Logs Persistentes)
+// Sincronizar con Reloj (Mejorado con Intent de Android)
 btnShareWatch.addEventListener('click', () => {
   const debugConsole = document.getElementById('debug-console');
   const debugMsg = document.getElementById('debug-messages');
@@ -629,7 +629,7 @@ btnShareWatch.addEventListener('click', () => {
     debugConsole.style.color = '#00ff00';           
   }
   
-  if (debugMsg) debugMsg.innerHTML = '<div>> Iniciando...</div>';
+  if (debugMsg) debugMsg.innerHTML = '<div>> Iniciando Sync (v2.0)...</div>';
 
   const log = (msg, color = '#00ff00') => {
     if (debugMsg) {
@@ -656,31 +656,34 @@ btnShareWatch.addEventListener('click', () => {
     }
 
     const dataStr = JSON.stringify(futureMeals);
-    log(`JSON generado: ${dataStr.length} bytes`);
+    log(`JSON: ${dataStr.length} bytes`);
 
     const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
     const encodedData = encodeURIComponent(base64Data);
-    const syncUrl = `quecomemos://sync?data=${encodedData}`;
     
-    log(`URL lista (${syncUrl.length} chars)`);
+    // Formato Intent oficial de Android: Más seguro y directo
+    const intentUrl = `intent://sync?data=${encodedData}#Intent;scheme=quecomemos;package=com.quecomemos.bridge;end`;
+    
+    log(`Intent listo (${intentUrl.length} chars)`);
     
     const a = document.createElement('a');
-    a.href = syncUrl;
+    a.href = intentUrl;
     document.body.appendChild(a);
     
-    log("Lanzando petición al teléfono...", "#ffd700");
+    log("Lanzando Intent a com.quecomemos.bridge...", "#ffd700");
     a.click();
     
     setTimeout(() => {
       if (document.body.contains(a)) document.body.removeChild(a);
-      log("¡Petición enviada!", "#00ff00");
-      log("Si el móvil no reacciona, revisa permisos.", "#ffd700");
+      log("¡Intent disparado!", "#00ff00");
+      log("Si no abre nada, reinstala la app puente.", "#ffd700");
     }, 1000);
 
   } catch (err) {
     log("CRASH EN WEB: " + err.message, "#ff3b30");
   }
 });
+
 
 
 
