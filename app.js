@@ -618,62 +618,70 @@ btnShareQr.addEventListener('click', () => {
   qrContainer.style.display = 'block';
 });
 
-// Sincronizar con Reloj (Vía App Puente - Mejorado)
+// Sincronizar con Reloj (Mejorado con Logs Persistentes)
 btnShareWatch.addEventListener('click', () => {
   const debugConsole = document.getElementById('debug-console');
   const debugMsg = document.getElementById('debug-messages');
-  if (debugConsole) debugConsole.style.display = 'block';
-  if (debugMsg) debugMsg.innerHTML = '';
+  
+  if (debugConsole) {
+    debugConsole.style.display = 'block';
+    debugConsole.style.backgroundColor = '#1e1e1e'; 
+    debugConsole.style.color = '#00ff00';           
+  }
+  
+  if (debugMsg) debugMsg.innerHTML = '<div>> Iniciando...</div>';
 
-  const log = (msg) => {
-    if (debugMsg) debugMsg.innerHTML += `<div>> ${msg}</div>`;
+  const log = (msg, color = '#00ff00') => {
+    if (debugMsg) {
+      debugMsg.innerHTML += `<div style="color: ${color}">> ${msg}</div>`;
+      debugConsole.scrollTop = debugConsole.scrollHeight;
+    }
     console.log(msg);
   };
 
-  log("Iniciando sincronización...");
+  try {
+    const todayDateStr = new Date().toISOString().split('T')[0];
+    const futureMeals = {};
+    
+    Object.keys(plannedMeals).forEach(date => {
+      if (date >= todayDateStr) {
+        futureMeals[date] = plannedMeals[date];
+      }
+    });
 
-  const todayDateStr = new Date().toISOString().split('T')[0];
-  const futureMeals = {};
-  
-  Object.keys(plannedMeals).forEach(date => {
-    if (date >= todayDateStr) {
-      futureMeals[date] = plannedMeals[date];
+    if (Object.keys(futureMeals).length === 0) {
+      log("ERROR: No hay menús futuros.", "#ff3b30");
+      alert("No hay menús futuros para sincronizar.");
+      return;
     }
-  });
 
-  if (Object.keys(futureMeals).length === 0) {
-    log("ERROR: No hay menús futuros.");
-    alert("No hay menús futuros para sincronizar.");
-    return;
+    const dataStr = JSON.stringify(futureMeals);
+    log(`JSON generado: ${dataStr.length} bytes`);
+
+    const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
+    const encodedData = encodeURIComponent(base64Data);
+    const syncUrl = `quecomemos://sync?data=${encodedData}`;
+    
+    log(`URL lista (${syncUrl.length} chars)`);
+    
+    const a = document.createElement('a');
+    a.href = syncUrl;
+    document.body.appendChild(a);
+    
+    log("Lanzando petición al teléfono...", "#ffd700");
+    a.click();
+    
+    setTimeout(() => {
+      if (document.body.contains(a)) document.body.removeChild(a);
+      log("¡Petición enviada!", "#00ff00");
+      log("Si el móvil no reacciona, revisa permisos.", "#ffd700");
+    }, 1000);
+
+  } catch (err) {
+    log("CRASH EN WEB: " + err.message, "#ff3b30");
   }
-
-  const dataStr = JSON.stringify(futureMeals);
-  log(`Datos JSON: ${dataStr.length} chars`);
-
-  const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
-  log(`Base64: ${base64Data.length} chars`);
-  
-  const encodedData = encodeURIComponent(base64Data);
-  const syncUrl = `quecomemos://sync?data=${encodedData}`;
-  log(`URL Total: ${syncUrl.length} chars`);
-  
-  if (syncUrl.length > 5000) {
-    log("AVISO: La URL es muy larga (>5000), puede fallar en algunos dispositivos.");
-  }
-
-  const a = document.createElement('a');
-  a.href = syncUrl;
-  document.body.appendChild(a);
-  
-  log("Lanzando Intent...");
-  a.click();
-  
-  setTimeout(() => {
-    document.body.removeChild(a);
-    log("Proceso terminado localmente.");
-    // No cerramos el modal inmediatamente para que se pueda leer el log si hay error
-  }, 1000);
 });
+
 
 
 
