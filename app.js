@@ -868,24 +868,39 @@ if ('serviceWorker' in navigator) {
     });
 
     // ── Estrategia 2: detectar actualización silenciosa entre sesiones ────
-    // El SW activo responde GET_VERSION → comparamos con lo guardado en localStorage
+    let versionCheckInterval;
+    const requestVersionFromSW = () => {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+        return true;
+      }
+      return false;
+    };
+
     navigator.serviceWorker.addEventListener('message', event => {
       if (event.data && event.data.type === 'SW_VERSION') {
+        clearInterval(versionCheckInterval);
         const newVersion = event.data.version;
         const lastVersion = localStorage.getItem('sw-version');
+        
+        console.log(`[PWA] Versión SW actual: ${newVersion} (Última conocida: ${lastVersion})`);
 
-        if (lastVersion && lastVersion !== newVersion) {
-          // El SW se actualizó silenciosamente (entre sesiones) → mostrar banner
-          showUpdateBanner(null); // null = no hay worker que notificar, solo recargar
+        // Si hay una versión previa y no coincide, o si forzamos por URL para test
+        if ((lastVersion && lastVersion !== newVersion) || window.location.search.includes('forceUpdate=1')) {
+          console.log("[PWA] ¡Detectada actualización! Mostrando banner...");
+          showUpdateBanner(null);
         }
-        // Guardar versión actual para la próxima comparación
         localStorage.setItem('sw-version', newVersion);
       }
     });
 
-    // Preguntar al SW activo cuál es su versión (si ya hay uno controlando)
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+    // Intentar pedir la versión y reintentar si el SW aún no controla la página
+    if (!requestVersionFromSW()) {
+      versionCheckInterval = setInterval(requestVersionFromSW, 1000);
+      setTimeout(() => clearInterval(versionCheckInterval), 5000);
+    } else {
+      // Pedir de nuevo tras un pequeño delay por si acaso
+      setTimeout(requestVersionFromSW, 2000);
     }
   });
 }
