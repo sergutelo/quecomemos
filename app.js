@@ -794,40 +794,57 @@ renderMainView();
 // Registrar Service Worker y gestionar actualizaciones
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Flag: solo recargamos si el usuario pulsó "Actualizar"
+    let userRequestedUpdate = false;
+
     navigator.serviceWorker.register('sw.js').then(reg => {
-      
+
       const showUpdateBanner = (worker) => {
         const toast = document.getElementById('update-toast');
         const btnUpdate = document.getElementById('btn-update-app');
         if (toast && btnUpdate) {
-          toast.style.display = 'flex';
+          // Pequeño delay para asegurar que el DOM está listo y el toast se ve
+          setTimeout(() => {
+            toast.style.display = 'flex';
+          }, 300);
+
           btnUpdate.onclick = () => {
+            userRequestedUpdate = true; // Marcamos que el usuario pidió la actualización
+            toast.style.display = 'none';
             worker.postMessage({ type: 'SKIP_WAITING' });
           };
         }
       };
 
-      // 1. Si ya hay uno esperando (la muchacha debería salir al abrir)
+      // 1. Si ya hay un SW en espera al abrir la app (la chica pop-art debe aparecer)
       if (reg.waiting) {
         showUpdateBanner(reg.waiting);
       }
 
-      // 2. Si se encuentra uno nuevo mientras la app está abierta
+      // 2. Si se descarga uno nuevo mientras la app está abierta
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
+          // Solo mostrar el banner si hay un controlador activo (no es la primera instalación)
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             showUpdateBanner(newWorker);
           }
         });
       });
+
+      // Comprobar si hay actualizaciones pendientes cada vez que la app vuelve al foco
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          reg.update();
+        }
+      });
+
     }).catch(err => console.error('Error al registrar SW.', err));
 
-    // Recargar cuando el nuevo SW tome el control
-    let refreshing = false;
+    // Solo recargamos si el usuario pulsó "Actualizar" explícitamente
+    // Esto evita que la página recargue sola sin que el usuario vea el modal
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
+      if (userRequestedUpdate) {
         window.location.reload();
       }
     });
