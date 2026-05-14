@@ -666,17 +666,12 @@ btnShareWatch.addEventListener('click', () => {
     
     log(`Intent listo (${intentUrl.length} chars)`);
     
-    const a = document.createElement('a');
-    a.href = intentUrl;
-    document.body.appendChild(a);
-    
     log("Lanzando Intent a com.quecomemos.bridge...", "#ffd700");
-    a.click();
+    window.location.href = intentUrl;
     
     setTimeout(() => {
-      if (document.body.contains(a)) document.body.removeChild(a);
       log("¡Intent disparado!", "#00ff00");
-      log("Si no abre nada, reinstala la app puente.", "#ffd700");
+      log("Si no abre nada, reinstala la app puente o comprueba si el navegador lo bloquea.", "#ffd700");
     }, 1000);
 
   } catch (err) {
