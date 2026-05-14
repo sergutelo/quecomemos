@@ -620,63 +620,28 @@ btnShareQr.addEventListener('click', () => {
 
 // Sincronizar con Reloj (Mejorado con Intent de Android)
 btnShareWatch.addEventListener('click', () => {
-  const debugConsole = document.getElementById('debug-console');
-  const debugMsg = document.getElementById('debug-messages');
+  const todayDateStr = new Date().toISOString().split('T')[0];
+  const futureMeals = {};
   
-  if (debugConsole) {
-    debugConsole.style.display = 'block';
-    debugConsole.style.backgroundColor = '#1e1e1e'; 
-    debugConsole.style.color = '#00ff00';           
+  Object.keys(plannedMeals).forEach(date => {
+    if (date >= todayDateStr) {
+      futureMeals[date] = plannedMeals[date];
+    }
+  });
+
+  if (Object.keys(futureMeals).length === 0) {
+    alert("No hay menús futuros para sincronizar.");
+    return;
   }
+
+  const dataStr = JSON.stringify(futureMeals);
+  const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
+  const encodedData = encodeURIComponent(base64Data);
   
-  if (debugMsg) debugMsg.innerHTML = '<div>> Iniciando Sync (v2.0)...</div>';
-
-  const log = (msg, color = '#00ff00') => {
-    if (debugMsg) {
-      debugMsg.innerHTML += `<div style="color: ${color}">> ${msg}</div>`;
-      debugConsole.scrollTop = debugConsole.scrollHeight;
-    }
-    console.log(msg);
-  };
-
-  try {
-    const todayDateStr = new Date().toISOString().split('T')[0];
-    const futureMeals = {};
-    
-    Object.keys(plannedMeals).forEach(date => {
-      if (date >= todayDateStr) {
-        futureMeals[date] = plannedMeals[date];
-      }
-    });
-
-    if (Object.keys(futureMeals).length === 0) {
-      log("ERROR: No hay menús futuros.", "#ff3b30");
-      alert("No hay menús futuros para sincronizar.");
-      return;
-    }
-
-    const dataStr = JSON.stringify(futureMeals);
-    log(`JSON: ${dataStr.length} bytes`);
-
-    const base64Data = btoa(unescape(encodeURIComponent(dataStr)));
-    const encodedData = encodeURIComponent(base64Data);
-    
-    // Formato Intent oficial de Android: Más seguro y directo
-    const intentUrl = `intent://sync?data=${encodedData}#Intent;scheme=quecomemos;package=com.quecomemos.bridge;end`;
-    
-    log(`Intent listo (${intentUrl.length} chars)`);
-    
-    log("Lanzando Intent a com.quecomemos.bridge...", "#ffd700");
-    window.location.href = intentUrl;
-    
-    setTimeout(() => {
-      log("¡Intent disparado!", "#00ff00");
-      log("Si no abre nada, reinstala la app puente o comprueba si el navegador lo bloquea.", "#ffd700");
-    }, 1000);
-
-  } catch (err) {
-    log("CRASH EN WEB: " + err.message, "#ff3b30");
-  }
+  // Formato Intent oficial de Android: Más seguro y directo
+  const intentUrl = `intent://sync?data=${encodedData}#Intent;scheme=quecomemos;package=com.quecomemos.bridge;end`;
+  
+  window.location.href = intentUrl;
 });
 
 
