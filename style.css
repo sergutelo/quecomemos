@@ -495,11 +495,6 @@ input:focus {
   background-color: var(--c-yellow);
   /* Texto siempre negro sobre amarillo por defecto */
   color: #121212;
-  /* Contorno negro en las letras para máximo contraste sobre amarillo */
-  text-shadow: -1px -1px 0 rgba(0,0,0,0.2),
-                1px -1px 0 rgba(0,0,0,0.2),
-               -1px  1px 0 rgba(0,0,0,0.2),
-                1px  1px 0 rgba(0,0,0,0.2);
   border: var(--border-width) solid #121212;
   box-shadow: 4px 4px 0px 0px #121212;
   font-family: 'Outfit', sans-serif;
