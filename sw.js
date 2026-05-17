@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quecomemos-v34';
+const CACHE_NAME = 'quecomemos-v35';
 const ASSETS = [
   './',
   './index.html',
