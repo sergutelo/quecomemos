@@ -611,7 +611,7 @@ btnShareQr.addEventListener('click', () => {
     width: 250,
     height: 250,
     colorDark : "#121212",
-    colorLight : "transparent",
+    colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
   });
   

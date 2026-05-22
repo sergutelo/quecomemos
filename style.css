@@ -658,6 +658,10 @@ html.font-xlarge { font-size: 20px; }
   .btn-primary { font-size: 1.4rem; padding: 16px; }
 }
 
+#qrcode img {
+  background: transparent !important;
+}
+
 @media print {
   body {
     background: white;
