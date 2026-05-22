@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quecomemos-v36';
+const CACHE_NAME = 'quecomemos-v37';
 const ASSETS = [
   './',
   './index.html',
@@ -14,7 +14,6 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
   );
 });
 
